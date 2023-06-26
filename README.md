@@ -6,7 +6,7 @@ Kotlin implementation of the Ramer Douglas Peucker Algorithm
 For more information: https://smallsketch.app/posts/line-simplify-with-ramer-douglas-peucker-algorithm/
 
 
-## requirements
+## Requirements
 
 ```
 $ kotlinc -version
@@ -24,12 +24,12 @@ There is NO WARRANTY, to the extent permitted by law.
 ```
 
 
-## usage
+## Usage
 
 Do _make_ and get a ./a-coffee-cup.svg in current dir.
 
 
-## an example
+## Example
 
 A original coffee cup SVG:
 

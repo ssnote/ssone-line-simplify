@@ -72,7 +72,9 @@ val toStrokeParser: (StrokeParseResult)->StrokeParser = { strokeParseResult->
 
 typealias PtsConverter = (List<Float>)->List<Float>
 
-val toSVG: (List<String>, PtsConverter)->String = { xyParamsList, ptsConverter->
+val toSVG: (List<String>, PtsConverter, Pair<String, String>, Boolean)->String = { xyParamsList, ptsConverter, colorPair, fillBackground->
+    val foregroundColor = colorPair.first
+    val backgroundColor = colorPair.second
 
     val toPath: (String)->String = { xyParams->
         val xyList = ptsConverter( xyParams.split(",").map { it.toFloat() } )
@@ -131,16 +133,28 @@ val toSVG: (List<String>, PtsConverter)->String = { xyParamsList, ptsConverter->
             "x=\"0mm\" y=\"0mm\" width=\"${w}mm\" height=\"${h}mm\" ",
             "viewBox=\"0.0 0.0 ${w} ${h}\">")
 
+    val background = listOf(
+        "<g fill=\"${backgroundColor}\">",
+        "<path d=\"M 0 0 L ${w} 0 L ${w} ${h} L 0 ${h} z\"/>",
+        "</g>")
+
     val body = listOf(
-        "<g stroke=\"rgb(76, 96, 130)\" stroke-width=\"${strokeWidth}\" fill=\"none\">",
+        "<g stroke=\"${foregroundColor}\" stroke-width=\"${strokeWidth}\" fill=\"none\">",
         pathList.joinToString(""),
         "</g>")
     val footer = listOf("</svg>")
 
-    (header + body + footer).joinToString("")
+    if( fillBackground ){
+        (header + background + body + footer).joinToString("")
+    } else {
+        (header + body + footer).joinToString("")
+    }
 }
 
 
+val fillBackground = true
+val foregroundColor = "rgb(0, 0, 0)"// rgb(76, 96, 130)
+val backgroundColor = "rgb(255, 255, 255)"
 
 if( args.size>2 ){
     val inputSvgFilename = args[0]
@@ -153,7 +167,7 @@ if( args.size>2 ){
     val outputSvgFile = File(outputSvgFilename)
 
     val strokeParser = toStrokeParser {xyParamsList->
-        val svg = toSVG(xyParamsList, ptsConverter)
+        val svg = toSVG(xyParamsList, ptsConverter, Pair(foregroundColor, backgroundColor), fillBackground)
         outputSvgFile.writer(Charsets.UTF_8).use { writer-> writer.write(svg) }
     } 
 
